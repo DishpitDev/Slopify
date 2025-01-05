@@ -115,7 +115,7 @@ header p {
 }
 
 a {
-  color: #d3869b;
+  color: var(--accent-red);
   transition:
     color 0.3s,
     text-decoration 0.3s;
