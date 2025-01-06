@@ -1,156 +1,182 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Opt-Out Form</title>
-    <link rel="stylesheet" href="../../assets/css/bulma.min.css">
+    <link rel="stylesheet" href="../../assets/css/bulma.min.css" />
     <style>
-        .question {
-            margin-bottom: 20px;
-        }
-        .question label {
-            font-weight: bold;
-        }
-        .question input {
-            margin-top: 10px;
-        }
+      .question {
+        margin-bottom: 20px;
+      }
+      .question label {
+        font-weight: bold;
+      }
+      .question input {
+        margin-top: 10px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <section class="section">
-        <div class="container">
-            <h1 class="title has-text-centered">Opt-Out Form</h1>
-            <form id="optOutForm">
-                <div class="field" id="questionContainer">
-                    <!-- Questions will be added here -->
-                </div>
-                <div class="control has-text-centered">
-                    <button class="button is-primary is-large" type="button" id="nextQuestionButton" onclick="addQuestion()">Next Question</button>
-                </div>
-                <div class="control has-text-centered" style="margin-top: 20px;">
-                    <button class="button is-danger is-large" type="submit" id="submitButton" disabled>Submit</button>
-                </div>
-                <p class="has-text-centered" id="statusMessage"></p>
-            </form>
-        </div>
+      <div class="container">
+        <h1 class="title has-text-centered">Opt-Out Form</h1>
+        <form id="optOutForm">
+          <div class="field" id="questionContainer">
+            <!-- Questions will be added here -->
+          </div>
+          <div class="control has-text-centered">
+            <button
+              class="button is-primary is-large"
+              type="button"
+              id="nextQuestionButton"
+              onclick="addQuestion()"
+            >
+              Next Question
+            </button>
+          </div>
+          <div class="control has-text-centered" style="margin-top: 20px">
+            <button
+              class="button is-danger is-large"
+              type="submit"
+              id="submitButton"
+              disabled
+            >
+              Submit
+            </button>
+          </div>
+          <p class="has-text-centered" id="statusMessage"></p>
+        </form>
+      </div>
     </section>
 
     <script>
-        const questions = [
-            "Why do you want to opt-out of cookies?",
-            "Do you understand the benefits of cookies?",
-            "Have you experienced any issues with cookies on our site?",
-            "Do you prefer a more personalized browsing experience?",
-            "Are you concerned about your privacy online?",
-            "How often do you clear your browser cookies?",
-            "Do you use any browser extensions to manage cookies?",
-            "Have you read our cookie policy?",
-            "Do you know how cookies help improve website performance?",
-            "Are you aware of the different types of cookies (e.g., session, persistent, third-party)?",
-            "Do you think cookies are essential for website functionality?",
-            "Would you like to receive fewer targeted ads?",
-            "Do you use multiple devices to access our website?",
-            "Have you opted out of cookies on other websites?",
-            "Do you feel informed about how cookies are used on our site?",
-            "Would you like to learn more about cookies and their benefits?",
-            "Do you think our website should offer more control over cookie settings?",
-            "Have you ever had a negative experience due to cookies?",
-            "Do you think cookies impact your online security?",
-            "Would you recommend opting out of cookies to others?",
-            "Do you think cookies affect your browsing speed?",
-            "Have you noticed any changes in website functionality after opting out of cookies?",
-            "Do you think cookies are necessary for online shopping?",
-            "Are you aware of how cookies are used in online advertising?",
-            "Do you think cookies help in providing a better user experience?",
-            "Have you ever contacted customer support regarding cookie issues?",
-            "Do you think our website provides enough information about cookies?",
-            "Would you like to see more transparency about cookie usage?",
-            "Do you think cookies should be regulated more strictly?",
-            "Have you ever changed your cookie settings on our website?",
-            "Do you believe cookies have a soul?", 
-    "If cookies could talk, what do you think they would say?",
-    "Have you ever dreamt about cookies?", 
-    "Do you think cookies have a secret society?",
-    "What is the most embarrassing thing you've done while eating a cookie?",
-    "If you were a cookie, what kind would you be and why?",
-    "Do you think cookies judge you?",
-    "Have you ever tried to have a conversation with a cookie?",
-    "Do you believe in cookie magic?",
-    "What is the most outrageous thing you've heard about cookies?",
-    "Do you think cookies have a sense of humor?",
-    "Have you ever had a cookie that tasted suspiciously like another food?",
-    "Do you think cookies are aware of their deliciousness?",
-    "If you could have a superpower related to cookies, what would it be?", 
-    "Do you think cookies have a preference for certain types of milk?",
-    "Have you ever felt a deep emotional connection to a cookie?",
-    "Do you think cookies can predict the future?",
-    "What is the most unusual place you've ever eaten a cookie?",
-    "Have you ever had a cookie that changed your life?",
-    "Do you think cookies are sentient beings?",
-    "If cookies could travel, where do you think they would go?", 
-    "Do you think cookies have a secret language?", 
-    "Have you ever tried to teach a cookie a trick?",
-    "Do you think cookies have a favorite holiday?",
-    "What is the most disturbing thing you can imagine happening to a cookie?",
-    "Do you think cookies have a sense of humor?",
-    "Have you ever had a cookie that tasted suspiciously like another food?",
-    "Do you think cookies are aware of their deliciousness?",
-    "If you could have a superpower related to cookies, what would it be?", 
-    "Do you think cookies have a preference for certain types of milk?",
-    "Have you ever felt a deep emotional connection to a cookie?",
-    "Do you think cookies can predict the future?",
-    "What is the most unusual place you've ever eaten a cookie?",
-    "Have you ever had a cookie that changed your life?",
-    "Do you think cookies are sentient beings?",
-    "If cookies could travel, where do you think they would go?", 
-    "Do you think cookies have a secret language?", 
-    "Have you ever tried to teach a cookie a trick?",
-    "Do you think cookies have a favorite holiday?",
-    "What is the most disturbing thing you can imagine happening to a cookie?"
-        ];
+      const questions = [
+        "Why do you want to opt-out of cookies?",
+        "Do you understand the benefits of cookies?",
+        "Have you experienced any issues with cookies on our site?",
+        "Do you prefer a more personalized browsing experience?",
+        "Are you concerned about your privacy online?",
+        "How often do you clear your browser cookies?",
+        "Do you use any browser extensions to manage cookies?",
+        "Have you read our cookie policy?",
+        "Do you know how cookies help improve website performance?",
+        "Are you aware of the different types of cookies (e.g., session, persistent, third-party)?",
+        "Do you think cookies are essential for website functionality?",
+        "Would you like to receive fewer targeted ads?",
+        "Do you use multiple devices to access our website?",
+        "Have you opted out of cookies on other websites?",
+        "Do you feel informed about how cookies are used on our site?",
+        "Would you like to learn more about cookies and their benefits?",
+        "Do you think our website should offer more control over cookie settings?",
+        "Have you ever had a negative experience due to cookies?",
+        "Do you think cookies impact your online security?",
+        "Would you recommend opting out of cookies to others?",
+        "Do you think cookies affect your browsing speed?",
+        "Have you noticed any changes in website functionality after opting out of cookies?",
+        "Do you think cookies are necessary for online shopping?",
+        "Are you aware of how cookies are used in online advertising?",
+        "Do you think cookies help in providing a better user experience?",
+        "Have you ever contacted customer support regarding cookie issues?",
+        "Do you think our website provides enough information about cookies?",
+        "Would you like to see more transparency about cookie usage?",
+        "Do you think cookies should be regulated more strictly?",
+        "Have you ever changed your cookie settings on our website?",
+        "Do you believe cookies have a soul?",
+        "If cookies could talk, what do you think they would say?",
+        "Have you ever dreamt about cookies?",
+        "Do you think cookies have a secret society?",
+        "What is the most embarrassing thing you've done while eating a cookie?",
+        "If you were a cookie, what kind would you be and why?",
+        "Do you think cookies judge you?",
+        "Have you ever tried to have a conversation with a cookie?",
+        "Do you believe in cookie magic?",
+        "What is the most outrageous thing you've heard about cookies?",
+        "Do you think cookies have a sense of humor?",
+        "Have you ever had a cookie that tasted suspiciously like another food?",
+        "Do you think cookies are aware of their deliciousness?",
+        "If you could have a superpower related to cookies, what would it be?",
+        "Do you think cookies have a preference for certain types of milk?",
+        "Have you ever felt a deep emotional connection to a cookie?",
+        "Do you think cookies can predict the future?",
+        "What is the most unusual place you've ever eaten a cookie?",
+        "Have you ever had a cookie that changed your life?",
+        "Do you think cookies are sentient beings?",
+        "If cookies could travel, where do you think they would go?",
+        "Do you think cookies have a secret language?",
+        "Have you ever tried to teach a cookie a trick?",
+        "Do you think cookies have a favorite holiday?",
+        "What is the most disturbing thing you can imagine happening to a cookie?",
+        "Do you think cookies have a sense of humor?",
+        "Have you ever had a cookie that tasted suspiciously like another food?",
+        "Do you think cookies are aware of their deliciousness?",
+        "If you could have a superpower related to cookies, what would it be?",
+        "Do you think cookies have a preference for certain types of milk?",
+        "Have you ever felt a deep emotional connection to a cookie?",
+        "Do you think cookies can predict the future?",
+        "What is the most unusual place you've ever eaten a cookie?",
+        "Have you ever had a cookie that changed your life?",
+        "Do you think cookies are sentient beings?",
+        "If cookies could travel, where do you think they would go?",
+        "Do you think cookies have a secret language?",
+        "Have you ever tried to teach a cookie a trick?",
+        "Do you think cookies have a favorite holiday?",
+        "What is the most disturbing thing you can imagine happening to a cookie?",
+      ];
 
-        let questionCount = 0;
+      let questionCount = 0;
 
-function getRandomQuestion() {
-    const randomIndex = Math.floor(Math.random() * questions.length);
-    return questions[randomIndex];
-}
+      function getRandomQuestion() {
+        const randomIndex = Math.floor(Math.random() * questions.length);
+        return questions[randomIndex];
+      }
 
-function addQuestion() {
-    if (questionCount < 10) {
-        const questionContainer = document.getElementById('questionContainer');
-        const newQuestion = document.createElement('div');
-        newQuestion.className = 'field question';
-        newQuestion.innerHTML = `
+      function addQuestion() {
+        if (questionCount < 10) {
+          const questionContainer =
+            document.getElementById("questionContainer");
+          const newQuestion = document.createElement("div");
+          newQuestion.className = "field question";
+          newQuestion.innerHTML = `
             <label class="label">${getRandomQuestion()}</label>
             <div class="control">
                 <input class="input" type="text" name="answer">
             </div>
         `;
-        questionContainer.appendChild(newQuestion);
-        questionCount++;
+          questionContainer.appendChild(newQuestion);
+          questionCount++;
 
-        if (questionCount === 10) {
-            document.getElementById('submitButton').disabled = true;
-            document.getElementById('statusMessage').innerText = "You are currently in the wait queue for cookie opt-out form submissions, you are " + getRandomNumber(1, 100) + "th in line. We estimate it will take " + getRandomNumber(1, 30) + " more minutes.";
+          if (questionCount === 10) {
+            document.getElementById("submitButton").disabled = true;
+            document.getElementById("statusMessage").innerText =
+              "You are currently in the wait queue for cookie opt-out form submissions, you are " +
+              getRandomNumber(1, 100) +
+              "th in line. We estimate it will take " +
+              getRandomNumber(1, 30) +
+              " more minutes.";
             setInterval(updateQueueStatus, 30000);
-        } else {
-            document.getElementById('statusMessage').innerText = (10 - questionCount) + " more questions left.";
+          } else {
+            document.getElementById("statusMessage").innerText =
+              10 - questionCount + " more questions left.";
+          }
         }
-    }
-}
+      }
 
-function getRandomNumber(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+      function getRandomNumber(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
 
-function updateQueueStatus() {
-    document.getElementById('statusMessage').innerText = "You are currently in the wait queue for cookie opt-out form submissions, you are " + getRandomNumber(1, 100) + "th in line. We estimate it will take " + getRandomNumber(1, 30) + " more minutes.";
-}
+      function updateQueueStatus() {
+        document.getElementById("statusMessage").innerText =
+          "You are currently in the wait queue for cookie opt-out form submissions, you are " +
+          getRandomNumber(1, 100) +
+          "th in line. We estimate it will take " +
+          getRandomNumber(1, 30) +
+          " more minutes.";
+      }
 
-// Add the first question when the page loads
-window.onload = addQuestion;
+      // Add the first question when the page loads
+      window.onload = addQuestion;
     </script>
-</body>
+  </body>
 </html>

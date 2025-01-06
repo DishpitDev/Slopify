@@ -1,23 +1,23 @@
 body {
-    font-family: "Comic Sans MS", sans-serif;
-    background-color: #C1BDB3;
-    color: #3D3B3C;
-    padding: 0;
-    margin: 0;
+  font-family: "Comic Sans MS", sans-serif;
+  background-color: #c1bdb3;
+  color: #3d3b3c;
+  padding: 0;
+  margin: 0;
 }
 
 header {
-    background-color: #3D3B3C;
-    color: #5F5B6B;
-    padding: 1em;
-    text-align: center;
-    width: 100%
+  background-color: #3d3b3c;
+  color: #5f5b6b;
+  padding: 1em;
+  text-align: center;
+  width: 100%;
 }
 
-.container{
-    text-align: center;
-    padding: 2em;
-    background-color: #5F5B6B;
-    color: #C1BDB3;
-    margin: 2em 0;
+.container {
+  text-align: center;
+  padding: 2em;
+  background-color: #5f5b6b;
+  color: #c1bdb3;
+  margin: 2em 0;
 }

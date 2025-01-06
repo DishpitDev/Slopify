@@ -1,4 +1,4 @@
-![Slopify](SlopifyLogo.png)
+![Slopify](S0/SlopifyLogo.png)
 
 [![](https://dcbadge.limes.pink/api/server/sPbES34ZsA)](https://discord.gg/WYmXc7Y8sF)
 

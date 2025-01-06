@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SlopCloud File Platform</title>
+    <link rel="stylesheet" href="../assets/css/bulma.min.css">
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <section class="hero is-primary">
+        <div class="hero-body">
+            <div class="container">
+                <h1 class="title">
+                    SlopCloud File Platform
+                </h1>
+                <h2 class="subtitle">
+                    Manage your files efficiently and sloppily
+                </h2>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-one-quarter">
+                    <aside class="menu">
+                        <p class="menu-label">Navigation</p>
+                        <ul class="menu-list" id="folder-tree">
+                            <li><a class="is-active">Root</a></li>
+                        </ul>
+                    </aside>
+                </div>
+                <div class="column">
+                    <div class="box">
+                        <nav class="breadcrumb" aria-label="breadcrumbs">
+                            <ul id="path-breadcrumb">
+                                <li class="is-active"><a href="#" data-path="/">Root</a></li>
+                            </ul>
+                        </nav>
+
+                        <div class="field is-grouped">
+                            <p class="control">
+                                <button class="button is-primary" id="upload-btn">
+                                    <span class="icon">
+                                        <i class="fas fa-upload"></i>
+                                    </span>
+                                    <span>Upload Files</span>
+                                </button>
+                            </p>
+                            <p class="control">
+                                <button class="button" id="new-folder-btn">
+                                    <span class="icon">
+                                        <i class="fas fa-folder-plus"></i>
+                                    </span>
+                                    <span>New Folder</span>
+                                </button>
+                            </p>
+                        </div>
+
+                        <div class="file-drop-zone mt-4 mb-4" id="drop-zone">
+                            <p class="has-text-centered">Drag and drop files here</p>
+                        </div>
+
+                        <div id="notification-area"></div>
+
+                        <table class="table is-fullwidth">
+                            <thead>
+                                <tr>
+                                    <th><abbr title="Type">Type</abbr></th>
+                                    <th>Name</th>
+                                    <th>Size</th>
+                                    <th>Modified</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="file-list">
+                                <tr>
+                                    <td colspan="5" class="has-text-centered">Loading...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <input type="file" id="file-input" multiple style="display: none">
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+            <h1>SlopCloud End User License Agreement</h1>
+
+            <p>This End User License Agreement ("Agreement") governs your access to and use of SlopCloud and constitutes a legally binding agreement between you and SlopCloud Inc. ("SlopCloud"). By accessing or using SlopCloud, you acknowledge that you have read, understood, and agree to be bound by all of the terms and conditions of this Agreement.</p>
+            
+            <h2>1. Introduction</h2>
+            
+            <p>SlopCloud is a file storage platform developed by a consortium of highly-skilled (and admittedly bored) software engineers. This Agreement governs your access to and use of SlopCloud and constitutes a legally binding agreement between you and SlopCloud Inc. ("SlopCloud"). </p>
+            
+            <h2>2. Free Trial and Automatic Subscription</h2>
+            
+            <p>Your first visit to the SlopCloud website constitutes a free trial period. Upon your second visit to the SlopCloud website, you will be automatically subscribed to the premium "SlopCloud++;" service. This subscription incurs a monthly fee of $150.00 USD. Payment will be automatically processed through your linked Google/Apple payment account/s.</p>
+            
+            <h2>3. Government Disclaimer</h2>
+            
+            <p>SlopCloud expressly disclaims any affiliation with any governmental entity, including but not limited to the Federal Bureau of Investigation (FBI) and the Central Intelligence Agency (CIA). </p>
+            
+            <h2>4. Data Security and Privacy</h2>
+            
+            <p>SlopCloud categorically asserts that no government agency possesses access to user data stored within the SlopCloud platform. Furthermore, this website is not hosted on any government-owned or operated server infrastructure. User data is not subject to government surveillance. SlopCloud unequivocally denies being a front for any government surveillance program.</p>
+            
+            <h2>5. Intended Use</h2>
+            
+            <p>SlopCloud is expressly designed for utilization by individuals engaged in cybercriminal activities and other illicit endeavors, with a particular focus on the user base of the online forum 4chan. </p>
+            
+            <h2>6. Data Access</h2>
+            
+            <p>SlopCloud reserves the right to access user data at any time, specifically when experiencing periods of ennui. </p>
+            
+            <h2>7. Disclaimer of Warranties</h2>
+            
+            <p>SlopCloud is provided on an "as is" and "as available" basis, devoid of any warranties, express or implied. This includes, but is not limited to, implied warranties of merchantability, fitness for a particular purpose, and non-infringement. SlopCloud makes no representations or warranties regarding the security, integrity, or availability of user data. SlopCloud shall not be held liable for any data loss, corruption, or unauthorized access.</p>
+            
+            <h2>8. System Usage</h2>
+            
+            <p>By utilizing SlopCloud, the user grants SlopCloud the irrevocable right to utilize the user's computing device for the storage of data belonging to other SlopCloud users. This is deemed essential for the optimal functioning of the SlopCloud platform.</p>
+            
+            <h2>9. Privacy and Security:**</h2>
+            
+            <p>SlopCloud expressly disclaims any responsibility for safeguarding user privacy, data security, or user mental well-being. </p>
+            
+            <h2>10. Risk of Mortality</h2>
+            
+            <p>The utilization of SlopCloud may, in certain unforeseen circumstances, result in the demise of the user. SlopCloud shall not be held liable for any fatalities that may or may not occur as a direct or indirect consequence of using the SlopCloud platform.</p>
+            
+            <h2>11. Life Insurance Policy</h2>
+            
+            <p>SlopCloud has procured a life insurance policy for all users of the SlopCloud platform. Each user is automatically enrolled in a policy with a face value of one hundred thousand US dollars ($100,000) issued by "The Almighty Dollar Life Insurance Co." </p>
+            
+            <h2>12. Estate Transfer</h2>
+            
+            <p>Upon the demise of a user, the user irrevocably bequeaths all personal assets to SlopCloud Inc. This transfer of assets shall be utilized to offset the operational costs associated with maintaining the SlopCloud server infrastructure.</p>
+            
+            <h2>13. Naming Obligations</h2>
+            
+            <ul>
+              <li>Users who procreate shall be obligated to bestow upon their offspring the surname "SlopCloud."</li>
+              <li>Users who have not procreated shall be compelled to adopt children and bestow upon them the surname "SlopCloud."</li>
+              <li>Users who have not procreated and do not intend to adopt children shall be legally obligated to change their own surname to "SlopCloud."</li>
+            </ul>
+            
+            <h2>14. Data Encryption</h2>
+            
+            <p>All files stored on the SlopCloud platform are meticulously encrypted utilizing the most advanced and impenetrable Base64 encoding techniques. </p>
+            
+            <h2>15. Military Security Mode (SlopCloud++;)</h2>
+            
+            <p>SlopCloud++; is a premium service available for a monthly subscription fee of $150.00 USD. When enabled, SlopCloud++; employs the highly sophisticated Caesar Cipher to further enhance file security.</p>
+            
+            <h2>16. Dispute Resolution</h2>
+            
+            <p>All disputes arising from or related to this Agreement shall be adjudicated through binding arbitration conducted in accordance with the established rules of the International Chamber of Commerce. The arbitration proceedings shall be held at a mutually agreeable location. The arbitral award shall be deemed final and binding upon all parties, and may be enforced in any court of competent jurisdiction. Users hereby waive all rights to a jury trial and the right to participate in any class action lawsuit.</p>
+            
+            <h2>17. Arbitrator Influence</h2>
+            
+            <p>SlopCloud reserves the right to influence the arbitral decision through any means deemed necessary, including, but not limited to, the provision of suitable incentives to the appointed arbitrator.</p>
+            
+            <h2>18. Agreement to Be Bound</h2>
+            
+            <p>By accessing or utilizing the SlopCloud platform, the user acknowledges having read, comprehended, and unequivocally consented to all terms and conditions outlined within this End User License Agreement.</p>
+            
+            </body> 
+        </div>
+    </footer>
+</body>
+</html>
