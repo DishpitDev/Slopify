@@ -1,0 +1,8 @@
+{
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "[html]": {
+        "editor.suggest.insertMode": "replace",
+        "editor.defaultFormatter": "vscode.html-language-features",
+    }
+}

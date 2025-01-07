@@ -1,0 +1,143 @@
+name: HTML and CSS Validation
+
+on:
+  pull_request:
+    paths:
+      - '**/*.html'
+      - '**/*.htm'
+      - '**/*.xhtml'
+      - '**/*.xht'
+
+jobs:
+  validate-html:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changed-files
+        run: |
+          FILES=$(git diff --name-only origin/${{ github.base_ref }} ${{ github.sha }} | grep -E '\.(html|htm|xhtml|xht|css)$' || true)
+          echo "$FILES" > changed_files.txt
+          if [ -s changed_files.txt ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set up Java
+        if: steps.changed-files.outputs.has_changes == 'true'
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Download vnu.jar
+        if: steps.changed-files.outputs.has_changes == 'true'
+        run: |
+          wget -O vnu.jar https://github.com/validator/validator/releases/download/latest/vnu.jar
+
+      - name: Validate HTML and CSS
+        if: steps.changed-files.outputs.has_changes == 'true'
+        id: validation
+        continue-on-error: true
+        run: |
+          mkdir -p validation
+          ERROR_LOG="validation/errors.txt"
+          touch $ERROR_LOG
+          
+          while IFS= read -r file; do
+            if [ -f "$file" ]; then
+              echo "Validating file: $file"
+              java -jar vnu.jar --format json --also-check-css "$file" >> $ERROR_LOG 2>&1 || true
+            fi
+          done < changed_files.txt
+          
+          if [ -s "$ERROR_LOG" ]; then
+            echo "has_errors=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_errors=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Post validation results
+        if: steps.changed-files.outputs.has_changes == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const hasErrors = '${{ steps.validation.outputs.has_errors }}' === 'true';
+            let commentBody = '## HTML Validation Results\n\n';
+            
+            if (hasErrors) {
+              const rawErrors = fs.readFileSync('validation/errors.txt', 'utf8');
+              let errors;
+              try {
+                errors = JSON.parse(rawErrors);
+              } catch (e) {
+                // Fallback for non-JSON output
+                commentBody += '❌ Validation found the following issues:\n\n```\n' + rawErrors + '\n```\n';
+              }
+              
+              if (errors && errors.messages) {
+                commentBody += '❌ Validation found the following issues:\n\n';
+                
+                // Group errors by file
+                const errorsByFile = {};
+                errors.messages.forEach(msg => {
+                  const file = msg.url.split('/').pop();
+                  if (!errorsByFile[file]) {
+                    errorsByFile[file] = [];
+                  }
+                  errorsByFile[file].push(msg);
+                });
+                
+                // Format errors by file
+                for (const [file, messages] of Object.entries(errorsByFile)) {
+                  commentBody += `### ${file}\n\n`;
+                  messages.forEach(msg => {
+                    const type = msg.type === 'error' ? '🔴' : '⚠️';
+                    const location = `Line ${msg.lastLine}, Column ${msg.lastColumn}`;
+                    commentBody += `${type} **${location}:** ${msg.message}\n\n`;
+                  });
+                }
+              }
+              
+              commentBody += '\nPlease fix these issues before merging.';
+            } else {
+              commentBody += '✅ All HTML and CSS validates successfully!';
+            }
+            
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const botComment = comments.data.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('HTML Validation Results')
+            );
+            
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: commentBody
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: commentBody
+              });
+            }
+
+      - name: Exit with error if validation failed
+        if: steps.validation.outputs.has_errors == 'true'
+        run: exit 1
