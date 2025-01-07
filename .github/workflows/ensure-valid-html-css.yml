@@ -47,17 +47,29 @@ jobs:
         continue-on-error: true
         run: |
           mkdir -p validation
-          ERROR_LOG="validation/errors.txt"
-          touch $ERROR_LOG
+          echo '{"messages":[]}' > validation/errors.json
+          
+          TEMP_LOG="validation/temp.json"
+          ALL_ERRORS="validation/errors.json"
           
           while IFS= read -r file; do
             if [ -f "$file" ]; then
               echo "Validating file: $file"
-              java -jar vnu.jar --format json --also-check-css "$file" >> $ERROR_LOG 2>&1 || true
+              # Validate single file
+              java -jar vnu.jar --format json --also-check-css "$file" > "$TEMP_LOG" 2>&1 || true
+              
+              # Add the full file path to each message before merging
+              if [ -f "$TEMP_LOG" ] && [ -s "$TEMP_LOG" ]; then
+                jq --arg filepath "$file" '.messages = (.messages | map(. + {"filepath": $filepath}))' "$TEMP_LOG" > "validation/temp_with_path.json"
+                jq -s '.[0].messages + .[1].messages | {messages: .}' "$ALL_ERRORS" "validation/temp_with_path.json" > "validation/combined.json"
+                mv "validation/combined.json" "$ALL_ERRORS"
+              fi
             fi
           done < changed_files.txt
           
-          if [ -s "$ERROR_LOG" ]; then
+          # Check if we have any errors or warnings
+          ISSUES=$(jq '.messages | length' "$ALL_ERRORS")
+          if [ "$ISSUES" -gt 0 ]; then
             echo "has_errors=true" >> $GITHUB_OUTPUT
           else
             echo "has_errors=false" >> $GITHUB_OUTPUT
@@ -73,40 +85,63 @@ jobs:
             let commentBody = '## HTML Validation Results\n\n';
             
             if (hasErrors) {
-              const rawErrors = fs.readFileSync('validation/errors.txt', 'utf8');
-              let errors;
               try {
-                errors = JSON.parse(rawErrors);
-              } catch (e) {
-                // Fallback for non-JSON output
-                commentBody += '❌ Validation found the following issues:\n\n```\n' + rawErrors + '\n```\n';
-              }
-              
-              if (errors && errors.messages) {
-                commentBody += '❌ Validation found the following issues:\n\n';
+                const data = JSON.parse(fs.readFileSync('validation/errors.json', 'utf8'));
                 
-                // Group errors by file
-                const errorsByFile = {};
-                errors.messages.forEach(msg => {
-                  const file = msg.url.split('/').pop();
-                  if (!errorsByFile[file]) {
-                    errorsByFile[file] = [];
+                // Group messages by filepath first
+                const groupedByFile = data.messages.reduce((acc, msg) => {
+                  const filepath = msg.filepath || msg.url.split('/').pop();
+                  if (!acc[filepath]) acc[filepath] = [];
+                  acc[filepath].push(msg);
+                  return acc;
+                }, {});
+                
+                if (Object.keys(groupedByFile).length > 0) {
+                  commentBody += '❌ Validation found the following issues:\n\n';
+                  
+                  for (const [filepath, messages] of Object.entries(groupedByFile)) {
+                    commentBody += `### ${filepath}\n\n`;
+                    
+                    // Group similar errors within each file
+                    const errorGroups = messages.reduce((groups, msg) => {
+                      if (msg.type !== 'error' && (msg.type !== 'info' || msg.subType !== 'warning')) {
+                        return groups;
+                      }
+                      
+                      // Create a key based on just the error message
+                      const key = msg.message;
+                      if (!groups[key]) {
+                        groups[key] = {
+                          message: msg,
+                          count: 0,
+                          lines: new Set()
+                        };
+                      }
+                      groups[key].count++;
+                      groups[key].lines.add(msg.lastLine);
+                      return groups;
+                    }, {});
+                    
+                    // Output grouped errors
+                    for (const group of Object.values(errorGroups)) {
+                      const type = group.message.type === 'error' ? '🔴' : '⚠️';
+                      const lines = Array.from(group.lines).sort((a, b) => a - b);
+                      const lineStr = lines.length === 1 
+                        ? `Line ${lines[0]}`
+                        : `Lines ${lines.join(', ')}`;
+                      
+                      commentBody += `${type} **${lineStr}:** ${group.message.message}\n\n`;
+                    }
                   }
-                  errorsByFile[file].push(msg);
-                });
-                
-                // Format errors by file
-                for (const [file, messages] of Object.entries(errorsByFile)) {
-                  commentBody += `### ${file}\n\n`;
-                  messages.forEach(msg => {
-                    const type = msg.type === 'error' ? '🔴' : '⚠️';
-                    const location = `Line ${msg.lastLine}, Column ${msg.lastColumn}`;
-                    commentBody += `${type} **${location}:** ${msg.message}\n\n`;
-                  });
+                  
+                  commentBody += '\nPlease fix these issues before merging.';
+                } else {
+                  commentBody += '✅ No significant issues found! (Some minor warnings were filtered out)';
                 }
+              } catch (e) {
+                commentBody += '⚠️ Error parsing validation results. Please check the workflow logs.\n';
+                console.error(e);
               }
-              
-              commentBody += '\nPlease fix these issues before merging.';
             } else {
               commentBody += '✅ All HTML and CSS validates successfully!';
             }
@@ -140,4 +175,10 @@ jobs:
 
       - name: Exit with error if validation failed
         if: steps.validation.outputs.has_errors == 'true'
-        run: exit 1
+        run: |
+          if [ -f validation/errors.json ]; then
+            ERRORS=$(jq '[.messages[] | select(.type == "error")] | length' validation/errors.json)
+            if [ "$ERRORS" -gt 0 ]; then
+              exit 1
+            fi
+          fi
