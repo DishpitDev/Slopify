@@ -11,8 +11,6 @@ on:
 jobs:
   validate-html:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -55,10 +53,8 @@ jobs:
           while IFS= read -r file; do
             if [ -f "$file" ]; then
               echo "Validating file: $file"
-              # Validate single file
               java -jar vnu.jar --format json --also-check-css "$file" > "$TEMP_LOG" 2>&1 || true
               
-              # Add the full file path to each message before merging
               if [ -f "$TEMP_LOG" ] && [ -s "$TEMP_LOG" ]; then
                 jq --arg filepath "$file" '.messages = (.messages | map(. + {"filepath": $filepath}))' "$TEMP_LOG" > "validation/temp_with_path.json"
                 jq -s '.[0].messages + .[1].messages | {messages: .}' "$ALL_ERRORS" "validation/temp_with_path.json" > "validation/combined.json"
@@ -67,7 +63,6 @@ jobs:
             fi
           done < changed_files.txt
           
-          # Check if we have any actual errors or warnings (excluding pure info messages)
           ISSUES=$(jq '[.messages[] | select(.type == "error" or (type == "info" and .subType == "warning"))] | length' "$ALL_ERRORS")
           if [ "$ISSUES" -gt 0 ]; then
             echo "has_errors=true" >> $GITHUB_OUTPUT
@@ -75,106 +70,44 @@ jobs:
             echo "has_errors=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Post validation results
+      - name: Generate validation report
         if: steps.changed-files.outputs.has_changes == 'true'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const hasErrors = '${{ steps.validation.outputs.has_errors }}' === 'true';
-            let commentBody = '## HTML Validation Results\n\n';
+        run: |
+          echo "## HTML Validation Results" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f validation/errors.json ]; then
+            # First, get the count of issues
+            ISSUE_COUNT=$(jq '[.messages[] | select(.type == "error" or (type == "info" and .subType == "warning"))] | length' validation/errors.json)
             
-            if (hasErrors) {
-              try {
-                const data = JSON.parse(fs.readFileSync('validation/errors.json', 'utf8'));
+            if [ "$ISSUE_COUNT" -gt 0 ]; then
+              echo "❌ Validation found the following issues:" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              
+              # Process each file's errors separately to avoid complex jq
+              jq -r '.messages[] | select(.type == "error" or (type == "info" and .subType == "warning")) | 
+                "\(.filepath)\t\(.type)\t\(.lastLine)\t\(.message)"' validation/errors.json | 
+              while IFS=$'\t' read -r filepath type line message; do
+                if [ "$type" = "error" ]; then
+                  ICON="🔴"
+                else
+                  ICON="⚠️"
+                fi
+                echo "### $filepath" >> $GITHUB_STEP_SUMMARY
+                echo "" >> $GITHUB_STEP_SUMMARY
+                echo "$ICON **Line $line:** $message" >> $GITHUB_STEP_SUMMARY
+                echo "" >> $GITHUB_STEP_SUMMARY
                 
-                // Filter messages to only include errors and warnings
-                const significantMessages = data.messages.filter(msg => 
-                  msg.type === 'error' || (msg.type === 'info' && msg.subType === 'warning')
-                );
-                
-                // Group messages by filepath
-                const groupedByFile = significantMessages.reduce((acc, msg) => {
-                  const filepath = msg.filepath || msg.url.split('/').pop();
-                  if (!acc[filepath]) acc[filepath] = [];
-                  acc[filepath].push(msg);
-                  return acc;
-                }, {});
-                
-                if (Object.keys(groupedByFile).length > 0) {
-                  commentBody += '❌ Validation found the following issues:\n\n';
-                  
-                  for (const [filepath, messages] of Object.entries(groupedByFile)) {
-                    if (messages.length === 0) continue; // Skip files with no significant messages
-                    
-                    commentBody += `### ${filepath}\n\n`;
-                    
-                    // Group similar errors within each file
-                    const errorGroups = messages.reduce((groups, msg) => {
-                      // Create a key based on just the error message
-                      const key = msg.message;
-                      if (!groups[key]) {
-                        groups[key] = {
-                          message: msg,
-                          count: 0,
-                          lines: new Set()
-                        };
-                      }
-                      groups[key].count++;
-                      groups[key].lines.add(msg.lastLine);
-                      return groups;
-                    }, {});
-                    
-                    // Output grouped errors
-                    for (const group of Object.values(errorGroups)) {
-                      const type = group.message.type === 'error' ? '🔴' : '⚠️';
-                      const lines = Array.from(group.lines).sort((a, b) => a - b);
-                      const lineStr = lines.length === 1 
-                        ? `Line ${lines[0]}`
-                        : `Lines ${lines.join(', ')}`;
-                      
-                      commentBody += `${type} **${lineStr}:** ${group.message.message}\n\n`;
-                    }
-                  }
-                  
-                  commentBody += '\nPlease fix these issues before merging.';
-                } else {
-                  commentBody += '✅ No significant issues found!';
-                }
-              } catch (e) {
-                commentBody += '⚠️ Error parsing validation results. Please check the workflow logs.\n';
-                console.error(e);
-              }
-            } else {
-              commentBody += '✅ All HTML and CSS validates successfully!';
-            }
-            
-            const comments = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-            });
-            
-            const botComment = comments.data.find(comment => 
-              comment.user.type === 'Bot' && 
-              comment.body.includes('HTML Validation Results')
-            );
-            
-            if (botComment) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: botComment.id,
-                body: commentBody
-              });
-            } else {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body: commentBody
-              });
-            }
+                # Create GitHub annotation
+                echo "::error file=$filepath,line=$line::$message"
+              done
+              
+              echo "Please fix these issues before merging." >> $GITHUB_STEP_SUMMARY
+            else
+              echo "✅ All HTML and CSS validates successfully!" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "✅ No files were validated" >> $GITHUB_STEP_SUMMARY
+          fi
 
       - name: Exit with error if validation failed
         if: steps.validation.outputs.has_errors == 'true'
