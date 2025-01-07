@@ -67,8 +67,8 @@ jobs:
             fi
           done < changed_files.txt
           
-          # Check if we have any errors or warnings
-          ISSUES=$(jq '.messages | length' "$ALL_ERRORS")
+          # Check if we have any actual errors or warnings (excluding pure info messages)
+          ISSUES=$(jq '[.messages[] | select(.type == "error" or (type == "info" and .subType == "warning"))] | length' "$ALL_ERRORS")
           if [ "$ISSUES" -gt 0 ]; then
             echo "has_errors=true" >> $GITHUB_OUTPUT
           else
@@ -88,8 +88,13 @@ jobs:
               try {
                 const data = JSON.parse(fs.readFileSync('validation/errors.json', 'utf8'));
                 
-                // Group messages by filepath first
-                const groupedByFile = data.messages.reduce((acc, msg) => {
+                // Filter messages to only include errors and warnings
+                const significantMessages = data.messages.filter(msg => 
+                  msg.type === 'error' || (msg.type === 'info' && msg.subType === 'warning')
+                );
+                
+                // Group messages by filepath
+                const groupedByFile = significantMessages.reduce((acc, msg) => {
                   const filepath = msg.filepath || msg.url.split('/').pop();
                   if (!acc[filepath]) acc[filepath] = [];
                   acc[filepath].push(msg);
@@ -100,14 +105,12 @@ jobs:
                   commentBody += '❌ Validation found the following issues:\n\n';
                   
                   for (const [filepath, messages] of Object.entries(groupedByFile)) {
+                    if (messages.length === 0) continue; // Skip files with no significant messages
+                    
                     commentBody += `### ${filepath}\n\n`;
                     
                     // Group similar errors within each file
                     const errorGroups = messages.reduce((groups, msg) => {
-                      if (msg.type !== 'error' && (msg.type !== 'info' || msg.subType !== 'warning')) {
-                        return groups;
-                      }
-                      
                       // Create a key based on just the error message
                       const key = msg.message;
                       if (!groups[key]) {
@@ -136,7 +139,7 @@ jobs:
                   
                   commentBody += '\nPlease fix these issues before merging.';
                 } else {
-                  commentBody += '✅ No significant issues found! (Some minor warnings were filtered out)';
+                  commentBody += '✅ No significant issues found!';
                 }
               } catch (e) {
                 commentBody += '⚠️ Error parsing validation results. Please check the workflow logs.\n';
