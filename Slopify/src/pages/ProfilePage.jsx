@@ -56,9 +56,27 @@ export default function ProfilePage() {
     }
   };
 
+  const isValidDisplayName = (name) => {
+    return /^[a-zA-Z0-9_]+$/.test(name);
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    const sanitizedDisplayName = profileData.display_name;
+
+    if (!sanitizedDisplayName.trim()) {
+      alert("Display name cannot be empty.");
+      setLoading(false);
+      return
+    }
+
+    if (!isValidDisplayName(sanitizedDisplayName)) {
+      alert("Display name can only contain letters, numbers, and underscores.");
+      setLoading(false);
+      return;
+    }
 
     const { data: session } = await supabase.auth.getSession();
     if (!session || !session.session) {

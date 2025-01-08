@@ -17,6 +17,10 @@ export default function RegisterForm() {
       .padStart(6, "0")}`;
   };
 
+  const isValidDisplayName = (name) => {
+    return /^[a-zA-Z0-9_]+$/.test(name);
+  }
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
@@ -28,6 +32,11 @@ export default function RegisterForm() {
 
     if (!displayName.trim()) {
       setError("Display name cannot be empty.");
+      return;
+    }
+
+    if (!isValidDisplayName(displayName)) {
+      setError("Display name can only contain letters, numbers, and underscores.");
       return;
     }
 
