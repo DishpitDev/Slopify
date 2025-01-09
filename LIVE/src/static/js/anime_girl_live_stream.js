@@ -3,25 +3,25 @@ document.addEventListener("DOMContentLoaded", function () {
   const popup = document.createElement("div");
   popup.className = "modal is-active";
   popup.innerHTML = `
-        <div class="modal-background"></div>
-        <div class="modal-content" onclick="popupFunction()">
-            <div class="card">
-                <header class="card-header">
-                    <p class="card-header-title">CLICK HERE TO SEE ANIME GIRL LIVE STREAM</p>
+        <div class="modal-background" style="background-color: rgba(10, 10, 10, 0.86);"></div>
+        <div class="modal-content" onclick="popupFunction()" style="position: relative; margin: auto; max-width: 640px; width: 100%;">
+            <div class="card" style="border: 1px solid #dbdbdb; border-radius: 6px; box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1);">
+                <header class="card-header" style="background-color: #f5f5f5; border-bottom: 1px solid #dbdbdb; padding: 0.75rem 1rem;">
+                    <p class="card-header-title" style="font-size: 1.25rem; font-weight: 700; color: #000;">CLICK HERE TO SEE ANIME GIRL LIVE STREAM</p>
                 </header>
-                <div class="card-image">
-                    <figure class="image is-4by3">
-                        <img src="assets/img/anime_girl.jpeg" alt="Anime Girl">
+                <div class="card-image" style="position: relative; padding-top: 75%;">
+                    <figure class="image is-4by3" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden;">
+                        <img src="assets/img/anime_girl.jpeg" alt="Anime Girl" style="display: block; width: 100%; height: auto;">
                     </figure>
                 </div>
-                <div class="card-content">
+                <div class="card-content" style="padding: 1rem;">
                     <div class="content">
-                        <button class="button is-primary" id="popup-button">Click Here</button>
+                        <button class="button is-primary" id="popup-button" style="background-color: #00d1b2; border: none; color: white; padding: 0.5rem 1rem; font-size: 1rem; border-radius: 4px;">Click Here</button>
                     </div>
                 </div>
             </div>
         </div>
-        <button class="modal-close is-large" aria-label="close"></button>
+        <button class="modal-close is-large" aria-label="close" style="position: fixed; top: 1.5rem; right: 1.5rem; background: none; border: none; font-size: 2rem; color: #000;">&times;</button>
     `;
 
   // Append the popup to the body
@@ -63,7 +63,7 @@ function popupFunction() {
 
     const hls = new Hls();
     hls.loadSource(
-      "https://247preview.foxnews.com/hls/live/2020027/fncv3preview/primary.m3u8",
+      "https://stream.skynewsarabia.com/hls/sna.m3u8",
     );
     hls.attachMedia(video);
     video.play();

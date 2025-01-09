@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", async function () {
   const main = document.querySelector("main"),
     canvas = document.getElementById("canvas"),
-    ctx = canvas.getContext("2d"),
+    ctx = canvas.getContext("2d", { willReadFrequently: true }),
     text = document.querySelector(".text"),
     ww = window.innerWidth,
     menu = document.querySelector(".menu"),

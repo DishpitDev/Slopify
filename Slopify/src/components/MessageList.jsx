@@ -159,7 +159,7 @@ export default function MessageList(data) {
     <div
       id="message-box"
       style={{
-        height: "400px",
+        height: "500px",
         overflowY: "auto",
         border: "1px solid #ccc",
       }}
