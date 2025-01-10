@@ -1,5 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 :root {
   --bg-dark: #282828;
   --bg-light: #fbf1c7;
@@ -19,7 +27,6 @@ body {
   color: var(--fg-dark);
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
 }
 

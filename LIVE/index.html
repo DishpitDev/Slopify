@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+     <script>
+      
+      document.addEventListener('DOMContentLoaded', function () {
+        if (Math.random() > 0.90) { // 10 % chance
+          document.write('-1 <!--')
+        }
+      })
+      
+    </script>
     <title>Slopify S1</title>
     <link rel="stylesheet" href="assets/css/bulma.min.css" />
     <meta charset="UTF-8" />
@@ -12,6 +21,7 @@
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
+    
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
@@ -46,10 +56,14 @@
 
     <script src="https://sleepie.uk/random_shit/calc_button_2.js"></script>
 
+    <!-- anti inspect -->
+    <script src="./src/static/js/anti-inspect.js"></script>
+
     <script src="./src/static/js/dipshit.js" defer></script>
   </head>
 
   <body>
+    
     <header>
         <h1 class="bg-red-300">Welcome to slopify.dev season 1 LIVE AND DIRECT</h1>
     </header>
@@ -61,7 +75,7 @@
       >
         Click here for stale slop. &#x1F416;
       </button>
-    </header>
+
     <div class="center"><p>This is how to center a div!</p></div>
     <hr />
     <a href="https://bsky.app/profile/lillielovesick.bsky.social">Follow me :3</a>
