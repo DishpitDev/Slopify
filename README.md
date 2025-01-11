@@ -69,3 +69,6 @@ For contributing, check **[CONTRIBUTING.md](https://github.com/DishpitDev/Slopif
 - “Twittermoanials” section (Twitter-style testimonials)
 - Locked In Alien video in Windows95-style media player in every 404 (i.e. non-existant) page, e.g. [https://slopify.dev/404-420-69](https://slopify.dev/404-420-69)
 - Personal diary of a certain Miz (me)
+
+<!-- CONTRIBUTORS:START -->
+<!-- CONTRIBUTORS:END -->

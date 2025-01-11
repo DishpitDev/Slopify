@@ -2,10 +2,13 @@
 
 html,
 body {
-  height: 100%;
-  width: 100%;
   margin: 0;
   padding: 0;
+}
+
+html {
+  min-width: fit-content;
+  min-height: fit-content;
 }
 
 :root {
@@ -13,6 +16,8 @@ body {
   --bg-light: #fbf1c7;
   --fg-dark: #ebdbb2;
   --fg-light: #3c3836;
+  --bg-green: #b8bb26;
+  --bg-gold: #d79921;
   --accent-blue: #83a598;
   --accent-green: #8ec07c;
   --accent-red: #fb4934;
@@ -20,6 +25,8 @@ body {
 }
 
 body {
+  height: 100%;
+  width: 100%;
   font-family: "Ubuntu Mono", serif;
   margin: 0;
   padding: 0;
@@ -31,8 +38,8 @@ body {
 }
 
 header {
-  background-color: #b8bb26;
-  color: #282828;
+  background-color: var(--bg-green);
+  color: var(--bg-dark);
   padding: 20px 0;
   text-align: center;
   width: 100%;
@@ -62,17 +69,17 @@ header p {
 .leaderboard th,
 .leaderboard td {
   padding: 10px;
-  border: 1px solid #ebdbb2;
+  border: 1px solid var(--fg-dark);
   text-align: left;
 }
 
 .leaderboard th {
-  background-color: #b8bb26;
-  color: #282828;
+  background-color: var(--bg-green);
+  color: var(--bg-dark);
 }
 
 .leaderboard td {
-  background-color: #3c3836;
+  background-color: var(--fg-light);
 }
 
 .download-btns {
@@ -84,8 +91,8 @@ header p {
 }
 
 .download-btn {
-  background-color: #d79921;
-  color: #282828;
+  background-color: var(--bg-gold);
+  color: var(--bg-dark);
   font-size: 16px;
   padding: 15px 30px;
   border: none;
@@ -101,7 +108,7 @@ header p {
 }
 
 .download-btn:hover {
-  background-color: #fabd2f;
+  background-color: var(--accent-yellow);
 }
 
 .download-btn img {
@@ -130,7 +137,7 @@ a {
 }
 
 a:hover {
-  color: #d79921;
+  color: var(--bg-gold);
   text-decoration: underline;
 }
 
@@ -142,7 +149,7 @@ footer {
 }
 
 footer a {
-  color: #d79921;
+  color: var(--bg-gold);
   text-decoration: none;
 }
 
@@ -195,4 +202,34 @@ footer a:hover {
 
 .season-link:hover {
   background-color: var(--accent-yellow);
+}
+
+.contributors-grid {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 0.75rem;
+  padding: 0.75rem;
+}
+
+#contributors p {
+  font-size: 1.2rem;
+  color: var(--fg-light);
+  text-align: center;
+}
+
+#contributors img {
+  width: 100%;
+  border-radius: 50%;
+  transition: transform 0.2s ease-in-out;
+  border: 2px solid var(--accent-blue);
+}
+
+#contributors img:hover {
+  transform: scale(1.2);
+}
+
+.error {
+  color: var(--accent-red);
+  font-size: 1.2rem;
+  text-align: center;
 }

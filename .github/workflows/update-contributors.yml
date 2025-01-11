@@ -1,0 +1,43 @@
+name: Update Contributors
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - mommy
+
+jobs:
+  update-contributors:
+    if: github.event.before != github.event.after && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run fetch-contributors.py
+        run: python fetch-contributors.py
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git diff --exit-code contributors.json || echo "changes"
+
+      - name: Commit and push changes
+        if: steps.check_changes.outputs.changes == 'changes'
+        run: |
+          git add contributors.json
+          git commit -m "Update contributors.json"
+          git push origin mommy
