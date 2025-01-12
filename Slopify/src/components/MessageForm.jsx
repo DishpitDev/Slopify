@@ -43,7 +43,7 @@ export default function MessageForm() {
     }
   };
 
-  const handleEmojiClick = (emojiKey) => {
+  const handleEmojiClick = (event, emojiKey) => {
     const emojiText = `:${emojiKey}:`;
     const newMessage = message + emojiText;
     const newCharCount = 1000 - newMessage.length;
@@ -53,8 +53,10 @@ export default function MessageForm() {
       setCharCount(newCharCount);
     }
 
-    setEmojiPickerVisible(false);
-  }
+    if (!event.shiftKey) {
+      setEmojiPickerVisible(false);
+    }
+  };
 
   const getColor = () => {
     if (charCount <= 0) return "black";
@@ -63,12 +65,28 @@ export default function MessageForm() {
     return "white";
   };
 
-  useEffect(() => {
-  }, [charCount]);
+  useEffect(() => {}, [charCount]);
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginTop: "1rem", position: "relative", width: "100%", display: "flex", flexDirection: "row", alignItems: "center" }}>
-      <div style={{ position: "relative", display: "flex", alignItems: "center", width: "100%" }}>
+    <form
+      onSubmit={handleSubmit}
+      style={{
+        marginTop: "1rem",
+        position: "relative",
+        width: "100%",
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+      }}
+    >
+      <div
+        style={{
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          width: "100%",
+        }}
+      >
         <input
           type="text"
           placeholder="Message your fellow sloppers..."
@@ -119,7 +137,7 @@ export default function MessageForm() {
               alt={emojiKey}
               title={emojiKey}
               style={{ width: "40px", height: "40px", cursor: "pointer" }}
-              onClick={() => handleEmojiClick(emojiKey)}
+              onClick={(event) => handleEmojiClick(event, emojiKey)}
             />
           ))}
         </div>
