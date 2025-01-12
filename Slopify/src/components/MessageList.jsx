@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../supabaseClient";
 import Message from "./Message";
 import { sendNotification } from "@tauri-apps/plugin-notification";
@@ -6,10 +6,18 @@ import { sendNotification } from "@tauri-apps/plugin-notification";
 const PAGE_SIZE = 50;
 
 export default function MessageList(data) {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState({});
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [scrolling, setScrolling] = useState(false);
+
+  const sortedMessages = useMemo(
+    () =>
+      Object.values(messages).sort(
+        (a, b) => new Date(a.created_at) - new Date(b.created_at),
+      ),
+    [messages],
+  );
 
   useEffect(() => {
     fetchMessages();
@@ -21,7 +29,10 @@ export default function MessageList(data) {
         (payload) => {
           const newMessage = payload.new;
           attachDisplayName(newMessage).then((msgWithDisplayName) => {
-            setMessages((prev) => [...prev, msgWithDisplayName]);
+            setMessages((prev) => ({
+              ...prev,
+              [newMessage.id]: msgWithDisplayName,
+            }));
             if (
               data.currentUser &&
               msgWithDisplayName.content.includes(`@${data.currentUser}`)
@@ -40,6 +51,7 @@ export default function MessageList(data) {
 
   useEffect(() => {
     const messageBox = document.getElementById("message-box");
+
     if (messageBox) {
       messageBox.scrollTop = messageBox.scrollHeight;
     }
@@ -61,22 +73,24 @@ export default function MessageList(data) {
         minute: "2-digit",
         second: "2-digit",
       })}`;
-    } else if (isYesterday) {
+    }
+
+    if (isYesterday) {
       return `Yesterday, ${messageDate.toLocaleTimeString(undefined, {
         hour: "numeric",
         minute: "2-digit",
         second: "2-digit",
       })}`;
-    } else {
-      return messageDate.toLocaleString(undefined, {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "numeric",
-        minute: "2-digit",
-        second: "2-digit",
-      });
     }
+
+    return messageDate.toLocaleString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      second: "2-digit",
+    });
   };
 
   const attachDisplayName = async (message) => {
@@ -125,7 +139,13 @@ export default function MessageList(data) {
         const messagesWithDisplayNames = await Promise.all(
           data.map(attachDisplayName),
         );
-        setMessages((prev) => [...prev, ...messagesWithDisplayNames]);
+        setMessages((prev) => ({
+          ...prev,
+          ...messagesWithDisplayNames.reduce((acc, msg) => {
+            acc[msg.id] = msg;
+            return acc;
+          }, {}),
+        }));
         if (data.length < PAGE_SIZE) {
           setHasMore(false);
         }
@@ -140,11 +160,13 @@ export default function MessageList(data) {
 
   const handleScroll = (e) => {
     const { scrollTop } = e.target;
-    if (scrollTop === 0 && hasMore) {
-      const oldestMessage = messages[messages.length - 1];
-      if (oldestMessage) {
-        fetchMessages(oldestMessage.created_at);
-      }
+    if (!(scrollTop === 0 && hasMore)) {
+      return;
+    }
+
+    const oldestMessage = sortedMessages[sortedMessages.length - 1];
+    if (oldestMessage) {
+      fetchMessages(oldestMessage.created_at);
     }
   };
 
@@ -168,7 +190,7 @@ export default function MessageList(data) {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        messages.map((msg) => (
+        sortedMessages.map((msg) => (
           <Message
             key={msg.id}
             name={msg.display_name}

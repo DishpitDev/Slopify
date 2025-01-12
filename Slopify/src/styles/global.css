@@ -87,3 +87,11 @@ form {
 #chat-container p {
   margin: 0.5rem 0;
 }
+
+#chat-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}

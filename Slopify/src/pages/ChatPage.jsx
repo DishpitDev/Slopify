@@ -54,7 +54,7 @@ export default function ChatPage() {
   };
 
   return (
-    <div>
+    <div id="chat-page">
       <h2>Welcome back to Slopify, {displayName}!</h2>
       <MessageList currentUser={displayName} />
       <MessageForm />
