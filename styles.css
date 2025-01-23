@@ -82,52 +82,6 @@ header p {
   background-color: var(--fg-light);
 }
 
-.download-btns {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-top: 30px;
-  flex-wrap: wrap;
-}
-
-.download-btn {
-  background-color: var(--bg-gold);
-  color: var(--bg-dark);
-  font-size: 16px;
-  padding: 15px 30px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  max-width: 250px;
-  min-width: 180px;
-}
-
-.download-btn:hover {
-  background-color: var(--accent-yellow);
-}
-
-.download-btn img {
-  width: 24px;
-  margin-right: 10px;
-}
-
-#windows-btn img {
-  width: 30px;
-}
-
-#linux-btn img {
-  width: 30px;
-}
-
-#macos-btn img {
-  width: 30px;
-}
-
 a {
   color: var(--accent-red);
   transition:
