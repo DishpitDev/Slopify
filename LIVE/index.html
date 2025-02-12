@@ -2,6 +2,25 @@
 <html lang="en">
 
 <head>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        if (Math.random() > 0.90) { // 10 % chance
+          document.write('-1 <!--')
+        }
+
+        const imageUrl = 'https://i.pinimg.com/originals/67/6f/4e/676f4e96500f1771e297c7e9fcbf468f.gif';
+        const numberOfImages = 10; // Number of times to add the image
+
+        for (let i = 0; i < numberOfImages; i++) {
+          const img = document.createElement('img');
+          img.src = imageUrl;
+          img.style.position = 'absolute';
+          img.style.top = Math.random() * window.innerHeight + 'px';
+          img.style.left = Math.random() * window.innerWidth + 'px';
+          document.body.appendChild(img);
+        }
+      });
+    </script>
   <script>
 
     document.addEventListener('DOMContentLoaded', function () {
